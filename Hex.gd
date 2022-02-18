@@ -9,6 +9,9 @@ func _init(q, r):
     self.q = q
     self.r = r
     
+func is_equal(other: Hex) -> bool:
+    return self.q == other.q and self.r == other.r
+    
 func to_pt() -> Vector2:
     var x = 3.0/2.0 * self.q
     var y = SQRT_3/2.0 * self.q + SQRT_3 * self.r

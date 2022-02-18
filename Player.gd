@@ -4,9 +4,9 @@ extends KinematicBody
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
-export var MAX_SPEED = 20
+export var MAX_SPEED = 16
 export var MIN_SPEED = 1
-export var ACCEL = 50
+export var ACCEL = 40
 export var GRAVITY = 100
 export var FRICTION = 2
 export var JUMP_VELOCITY = 20
