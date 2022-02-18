@@ -15,6 +15,7 @@ var velocity: Vector3 = Vector3.ZERO
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+    Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
     pass # Replace with function body.
 
 func _physics_process(delta):
@@ -30,11 +31,17 @@ func _physics_process(delta):
         h_direction.y += 1
     if Input.is_action_pressed("move_down"):
         h_direction.y -= 1
-        
-    h_direction = h_direction.normalized()
     
-    velocity.x += h_direction.x * ACCEL * delta
-    velocity.z += -h_direction.y * ACCEL * delta
+    var move_dir_3d = Vector3()
+    move_dir_3d += self.global_transform.basis.x * h_direction.x
+    move_dir_3d += -self.global_transform.basis.z * h_direction.y
+    move_dir_3d.y = 0
+    move_dir_3d = move_dir_3d.normalized()
+    
+    var move_dir = Vector2(move_dir_3d.x, -move_dir_3d.z)
+    
+    velocity.x += move_dir.x * ACCEL * delta
+    velocity.z += -move_dir.y * ACCEL * delta
     
     if Input.is_action_just_pressed("jump") and self.is_on_floor():
         velocity.y += JUMP_VELOCITY
@@ -57,6 +64,15 @@ func _physics_process(delta):
     velocity.x = h_velocity.x
     velocity.z = h_velocity.z
     
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#    pass
+func _input(event):
+    if event.is_action_pressed("ui_cancel"):
+        if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+            Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+        else:
+            Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+            
+    if event is InputEventMouseMotion:
+        var h_movement: float = (event as InputEventMouseMotion).relative.x;
+        var clamped = clamp(h_movement, -10, 10)
+        var rot_rad = -deg2rad(h_movement)
+        self.rotate_y(rot_rad)

@@ -8,11 +8,32 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Reference",
+"class": "Hex",
+"language": "GDScript",
+"path": "res://Hex.gd"
+}, {
+"base": "Reference",
+"class": "Util",
+"language": "GDScript",
+"path": "res://Util.gd"
+} ]
+_global_script_class_icons={
+"Hex": "",
+"Util": ""
+}
+
 [application]
 
 config/name="rpg_01"
 run/main_scene="res://test_env.tscn"
 config/icon="res://icon.png"
+
+[debug]
+
+gdscript/warnings/unsafe_cast=true
+gdscript/warnings/unsafe_call_argument=true
 
 [display]
 
