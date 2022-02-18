@@ -12,9 +12,11 @@ export var FRICTION = 2
 export var JUMP_VELOCITY = 20
 
 var velocity: Vector3 = Vector3.ZERO
+var camera_pivot: Spatial
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+    camera_pivot = $Camera
     Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
     pass # Replace with function body.
 
@@ -76,3 +78,9 @@ func _input(event):
         var clamped = clamp(h_movement, -10, 10)
         var rot_rad = -deg2rad(h_movement)
         self.rotate_y(rot_rad)
+        
+        var v_mov: float = (event as InputEventMouseMotion).relative.y;
+        var clamped_v = clamp(v_mov, -10, 10)
+        var rot_rad_v = -deg2rad(v_mov)
+        camera_pivot.rotate_x(rot_rad_v)
+        camera_pivot.rotation_degrees.x = clamp(camera_pivot.rotation_degrees.x, -80, 80)

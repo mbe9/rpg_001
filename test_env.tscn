@@ -7,8 +7,8 @@
 [sub_resource type="Environment" id=6]
 fog_enabled = true
 fog_color = Color( 0, 0, 0, 1 )
-fog_depth_begin = 40.0
-fog_depth_end = 60.0
+fog_depth_begin = 30.0
+fog_depth_end = 40.0
 fog_transmit_enabled = true
 dof_blur_far_distance = 40.0
 
@@ -26,4 +26,4 @@ shadow_enabled = true
 [node name="Spatial" parent="WorldLoader" instance=ExtResource( 2 )]
 
 [node name="Player" parent="WorldLoader" instance=ExtResource( 1 )]
-transform = Transform( 0.5, 0, 0, 0, 1, 0, 0, 0, 0.5, 0, 3.15386, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.15386, 0 )
