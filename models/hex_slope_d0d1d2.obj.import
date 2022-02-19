@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hex_slope_d0d1d2.obj-8b98940117d73fed6b24d22b10f545bd.mesh"
+
+[deps]
+
+files=[ "res://.import/hex_slope_d0d1d2.obj-8b98940117d73fed6b24d22b10f545bd.mesh" ]
+
+source_file="res://models/hex_slope_d0d1d2.obj"
+dest_files=[ "res://.import/hex_slope_d0d1d2.obj-8b98940117d73fed6b24d22b10f545bd.mesh", "res://.import/hex_slope_d0d1d2.obj-8b98940117d73fed6b24d22b10f545bd.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286

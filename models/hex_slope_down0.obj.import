@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hex_slope_down0.obj-db764762e29dfc46e5c67150dcebe5ed.mesh"
+
+[deps]
+
+files=[ "res://.import/hex_slope_down0.obj-db764762e29dfc46e5c67150dcebe5ed.mesh" ]
+
+source_file="res://models/hex_slope_down0.obj"
+dest_files=[ "res://.import/hex_slope_down0.obj-db764762e29dfc46e5c67150dcebe5ed.mesh", "res://.import/hex_slope_down0.obj-db764762e29dfc46e5c67150dcebe5ed.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286

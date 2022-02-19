@@ -1,32 +1,41 @@
 class_name Util
 
-const SQRT_3 = 1.732050807568877
+const SQRT_3: float = 1.732050807568877
+const ONE_THIRD: float = 0.333333333333
+
+static func get_adj_hexes(hex: Hex) -> Array:
+    return [
+        Hex.new(hex.q + 0, hex.r - 1),
+        Hex.new(hex.q + 1, hex.r - 1),
+        Hex.new(hex.q + 1, hex.r + 0),
+        Hex.new(hex.q + 0, hex.r + 1),
+        Hex.new(hex.q - 1, hex.r + 1),
+        Hex.new(hex.q - 1, hex.r + 0),
+    ]
 
 static func randi_range(start:int, end:int) -> int:
     var range_size: int = end - start
     return randi() % (range_size + 1) + start
 
 static func hex_from_pt(pt: Vector2) -> Hex:
-    var q_f = 2.0/3.0 * pt.x
-    var r_f = (-1.0/3.0 * pt.x + SQRT_3/3.0 * pt.y)
-    
-    var s_f = -q_f - r_f
-    var q_r = round(q_f)
-    var r_r = round(r_f)
-    var s_r = round(s_f)
+    var vec_float: Vector3 = Vector3(
+        2.0 * ONE_THIRD * pt.x,
+        -ONE_THIRD * pt.x + SQRT_3 * ONE_THIRD * pt.y, 
+        0
+    )
+    vec_float.z = - vec_float.x - vec_float.y
 
-    var q_diff = abs(q_r - q_f)
-    var r_diff = abs(r_r - r_f)
-    var s_diff = abs(s_r - s_f)
+    var vec_round: Vector3 = vec_float.round()
+    var vec_diff: Vector3 = (vec_round - vec_float).abs()
 
-    if q_diff > r_diff and q_diff > s_diff:
-        q_r = -r_r - s_r
-    elif r_diff > s_diff:
-        r_r = -q_r - s_r
+    if vec_diff.x > vec_diff.y and vec_diff.x > vec_diff.z:
+        vec_round.x = - vec_round.y - vec_round.z
+    elif vec_diff.y > vec_diff.z:
+        vec_round.y = -vec_round.x - vec_round.z
     else:
-        s_r = -q_r - r_r
-        
-    return Hex.new(q_f, r_f)
+        vec_round.z = -vec_round.x - vec_round.y
+
+    return Hex.new(vec_float.x, vec_float.y)
 
 static func get_hex_area_count(size: int) -> int:
     if size > 0:

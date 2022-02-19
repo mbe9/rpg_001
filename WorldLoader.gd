@@ -18,7 +18,6 @@ var hexes_to_remove: Array
 var hexes_to_add: Array
 var thread: Thread
 var add_mutex: Mutex
-var remove_mutex: Mutex
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -27,11 +26,16 @@ func _ready():
     height_noise.octaves = 4
     height_noise.period = 50.0
     height_noise.persistence = 0.8
+
     
-    tile_scenes.append(preload("res://tiles/hex_000.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_flat.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_slope_down01.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_slope_down012.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_slope_d0d1d2.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_slope_down0134.tscn"))
+    tile_scenes.append(preload("res://tiles/hex_slope_d0d1d2d3.tscn"))
     player = get_node("Player")
     
-    remove_mutex = Mutex.new()
     add_mutex = Mutex.new()
     thread = Thread.new()
     thread.start(self, "generate_hexes")
@@ -40,19 +44,18 @@ func _exit_tree():
     #thread.wait_to_finish()
     pass
     
-func _physics_process(delta):
+func _process(delta):    
     add_mutex.lock()
     
-    var add_count = min(TILE_CREATE_CYCLE_COUNT, hexes_to_add.size())
-    
     for i in range(hexes_to_add.size()):
-        var item = hexes_to_add.pop_back()
+        var item = hexes_to_add[i]
         
         var hex: Hex = item["hex"]
                        
-        var new_scene: PackedScene = tile_scenes[0]
-        var new_node: Spatial = new_scene.instance()
+        var new_node: Spatial = item["scene"].instance()
         self.add_child(new_node)
+        
+        new_node.rotate_y(deg2rad(item["rot"] * 60.0))
         
         var new_pt: Vector3 = item["pt"]
         new_node.global_transform.origin.x = new_pt.x
@@ -62,16 +65,10 @@ func _physics_process(delta):
         if not tiles.has(hex.q):
             tiles[hex.q] = {}  
         tiles[hex.q][hex.r] = new_node
-    
-    
-    var remove_count = min(TILE_DELETE_CYCLE_COUNT, hexes_to_remove.size())
-    
+     
     for i in range(hexes_to_remove.size()):
-        var hex: Hex = hexes_to_remove.pop_back()
+        var hex: Hex = hexes_to_remove[i]
         
-        #if not tiles.has(hex.q) or not tiles[hex.q].has(hex.r):
-        #    continue
-            
         var node = tiles[hex.q][hex.r]
         
         tiles[hex.q].erase(hex.r)
@@ -80,19 +77,72 @@ func _physics_process(delta):
             
         self.remove_child(node)
         node.queue_free()
- 
+        
+    hexes_to_add.clear()
+    hexes_to_remove.clear()
+    
     add_mutex.unlock()
     
-func generate_hexes(data):
-    while true:
-        var player_pos: Vector2
-        player_pos.x = player.global_transform.origin.x
-        player_pos.y = -player.global_transform.origin.z
+
+func gen_hex_model(hex: Hex) -> Array:
+    var hex_lvl: int = gen_hex_height_level(hex)
+    var adj_hexes: Array = Util.get_adj_hexes(hex)
+    var adj_hexes_lvl: Array = []
+    
+    var down_1_cnt = 0
+    
+    for i in range(6):
+        var lvl: int = gen_hex_height_level(adj_hexes[i]) - hex_lvl
+        adj_hexes_lvl.append(lvl)
+        if lvl == -1:
+            down_1_cnt += 1
         
+    match down_1_cnt:
+        1:
+            for i in range(6):
+                if adj_hexes_lvl[i] == -1:
+                    return [1, i]
+        2: 
+            for i in range(6):
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 1] == -1):
+                    return [2, i]
+            for i in range(6):
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 2] == -1):
+                    return [3, i]
+            for i in range(3):
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 3] == -1):
+                    return [4, i]
+        3:
+            for i in range(6):
+                if (adj_hexes_lvl[i] == -1) and \
+                   (adj_hexes_lvl[i - 1] == -1) and \
+                   (adj_hexes_lvl[i - 2] == -1):
+                    return [3, i]      
+        4:
+            for i in range(6):
+                if (adj_hexes_lvl[i] == -1) and \
+                   (adj_hexes_lvl[i - 1] == -1) and \
+                   (adj_hexes_lvl[i - 2] == -1) and \
+                   (adj_hexes_lvl[i - 3] == -1):
+                    return [5, i]
+    return [0, 0]
+    
+
+func gen_hex_height_level(hex: Hex) -> int:
+    var height = height_noise.get_noise_2dv(hex.to_pt())
+    return int(round(height * 8))
+     
+func generate_hexes(_data):
+    while true:
+        # TODO: for some reason assigning these values in other places
+        # causes huge lag spikes. Investigate further
+        var trafo: Transform = player.get_global_transform()
+        var player_pos: Vector2 = Vector2(trafo.origin.x, -trafo.origin.z)
+
         add_mutex.lock()
             
         # Tile creation
-        for iter in range(THREAD_CREATE_CNT):
+        for _iter in range(THREAD_CREATE_CNT):
             var offset_q: int = Util.randi_range(-TILE_LOAD_RADIUS, TILE_LOAD_RADIUS)
             var range_min:int = max(-TILE_LOAD_RADIUS - offset_q, -TILE_LOAD_RADIUS)
             var range_max:int = min(TILE_LOAD_RADIUS - offset_q, TILE_LOAD_RADIUS)
@@ -116,15 +166,20 @@ func generate_hexes(data):
                     var new_pt: Vector3
                     new_pt.x = hex.to_pt().x * HEX_RADIUS
                     new_pt.y = hex.to_pt().y * HEX_RADIUS
-                    var height = height_noise.get_noise_2dv(hex.to_pt())
-                    new_pt.z = round(height * 8) * 0.75
+                    new_pt.z = gen_hex_height_level(hex) * 0.75
+                    
+                    var hex_model: Array = gen_hex_model(hex)
+                    var new_scene: PackedScene = tile_scenes[hex_model[0]]
+                    var rotation: int = hex_model[1]
                     
                     hexes_to_add.append({
                         "hex": hex,
-                        "pt": new_pt
+                        "pt": new_pt,
+                        "scene": new_scene,
+                        "rot": rotation,
                     })
                 
-        for iter in range(THREAD_DELETE_CNT):
+        for _iter in range(THREAD_DELETE_CNT):
             # Tile cleanup
             if not tiles.empty():
                 var hex_q = tiles.keys()[randi() % tiles.size()]

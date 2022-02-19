@@ -5,9 +5,9 @@ const SQRT_3 = 1.732050807568877
 var q: int
 var r: int
 
-func _init(q, r):
-    self.q = q
-    self.r = r
+func _init(_q, _r):
+    q = _q
+    r = _r
     
 func is_equal(other: Hex) -> bool:
     return self.q == other.q and self.r == other.r

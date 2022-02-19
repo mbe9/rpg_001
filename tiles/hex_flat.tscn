@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://models/hex_000.obj" type="ArrayMesh" id=1]
+[ext_resource path="res://models/hex_flat.obj" type="ArrayMesh" id=1]
 
 [sub_resource type="ConvexPolygonShape" id=2]
 points = PoolVector3Array( 0, 0, 1, 0.866025, 0, 0.5, -0.866025, 0, 0.5, 0, -8, 1, 0.866025, -8, 0.5, 0.866025, 0, -0.5, -0.866025, 0, -0.5, -0.866025, -8, 0.5, 0.866025, -8, -0.5, 0, 0, -1, -0.866025, -8, -0.5, 0, -8, -1 )
@@ -9,7 +9,7 @@ points = PoolVector3Array( 0, 0, 1, 0.866025, 0, 0.5, -0.866025, 0, 0.5, 0, -8, 
 extents = Vector3( 0.5, 4, 0.867 )
 
 [node name="Spatial" type="StaticBody"]
-transform = Transform( 2.59808, 0, 1.5, 0, 1, 0, -1.5, 0, 2.59808, 0, 0, 0 )
+transform = Transform( 2.59808, 0, 1.5, 0, 3, 0, -1.5, 0, 2.59808, 0, 0, 0 )
 collision_mask = 0
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
