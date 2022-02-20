@@ -17,7 +17,7 @@ var camera_pivot: Spatial
 # Called when the node enters the scene tree for the first time.
 func _ready():
     camera_pivot = $Camera
-    Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+    
     pass # Replace with function body.
 
 func _physics_process(delta):
@@ -66,13 +66,7 @@ func _physics_process(delta):
     velocity.x = h_velocity.x
     velocity.z = h_velocity.z
     
-func _input(event):
-    if event.is_action_pressed("ui_cancel"):
-        if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-            Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-        else:
-            Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-            
+func _input(event): 
     if event is InputEventMouseMotion:
         var h_movement: float = (event as InputEventMouseMotion).relative.x;
         var clamped = clamp(h_movement, -10, 10)

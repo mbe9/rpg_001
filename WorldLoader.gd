@@ -10,7 +10,7 @@ const THREAD_CREATE_CNT = 1
 const THREAD_DELETE_CNT = 1
 
 var existing_hexes: Array
-var tile_scenes: Array
+var tile_scenes: Dictionary
 var tiles: Dictionary
 var player: Spatial
 var height_noise: OpenSimplexNoise
@@ -24,16 +24,22 @@ func _ready():
     height_noise = OpenSimplexNoise.new()
     height_noise.seed = randi()
     height_noise.octaves = 4
-    height_noise.period = 50.0
+    height_noise.period = 10.0
     height_noise.persistence = 0.8
 
-    
-    tile_scenes.append(preload("res://tiles/hex_flat.tscn"))
-    tile_scenes.append(preload("res://tiles/hex_slope_down01.tscn"))
-    tile_scenes.append(preload("res://tiles/hex_slope_down012.tscn"))
-    tile_scenes.append(preload("res://tiles/hex_slope_d0d1d2.tscn"))
-    tile_scenes.append(preload("res://tiles/hex_slope_down0134.tscn"))
-    tile_scenes.append(preload("res://tiles/hex_slope_d0d1d2d3.tscn"))
+    tile_scenes = {
+        "flat": preload("res://tiles/hex_flat.tscn"),
+        "down01": preload("res://tiles/hex_slope_down01.tscn"),
+        "down012": preload("res://tiles/hex_slope_down012.tscn"),
+        "down0123": preload("res://tiles/hex_slope_down0123.tscn"),
+        "down01234": preload("res://tiles/hex_slope_down01234.tscn"),
+        "down012345": preload("res://tiles/hex_slope_down012345.tscn"),
+        "down0134": preload("res://tiles/hex_slope_down0134.tscn"),
+        "down03": preload("res://tiles/hex_slope_down03.tscn"),
+        "down013": preload("res://tiles/hex_slope_down013.tscn"),
+        "down014": preload("res://tiles/hex_slope_down014.tscn"),
+    }
+
     player = get_node("Player")
     
     add_mutex = Mutex.new()
@@ -101,31 +107,72 @@ func gen_hex_model(hex: Hex) -> Array:
         1:
             for i in range(6):
                 if adj_hexes_lvl[i] == -1:
-                    return [1, i]
+                    return ["down01", i]
         2: 
             for i in range(6):
                 if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 1] == -1):
-                    return [2, i]
+                    return ["down012", i]
             for i in range(6):
                 if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 2] == -1):
-                    return [3, i]
+                    if (adj_hexes_lvl[i - 1] < - 1):
+                        return ["down0123", i]
+                    else:
+                        return ["down03", i]
             for i in range(3):
-                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 3] == -1):
-                    return [4, i]
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 3] == -1): 
+                    return ["down0134", i]
         3:
             for i in range(6):
                 if (adj_hexes_lvl[i] == -1) and \
                    (adj_hexes_lvl[i - 1] == -1) and \
-                   (adj_hexes_lvl[i - 2] == -1):
-                    return [3, i]      
+                   (adj_hexes_lvl[i - 2] == -1):   
+                    if adj_hexes_lvl[(i + 1) % 6] == 1 and adj_hexes_lvl[i - 3] == 1:
+                        return ["down01", i - 1]
+                    elif adj_hexes_lvl[(i + 1) % 6] == 1:
+                        return ["down012", i - 1]
+                    elif adj_hexes_lvl[i - 3] == 1:
+                        return ["down012", i]
+                    else:
+                        return ["down0123", i]
+                         
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 1] == -1) and \
+                   (adj_hexes_lvl[i - 3] == -1):
+                    return ["down014", i]
+                    
+                if (adj_hexes_lvl[i] == -1) and (adj_hexes_lvl[i - 1] == -1) and \
+                   (adj_hexes_lvl[i - 4] == -1):
+                    return ["down013", i - 1]
         4:
             for i in range(6):
                 if (adj_hexes_lvl[i] == -1) and \
                    (adj_hexes_lvl[i - 1] == -1) and \
                    (adj_hexes_lvl[i - 2] == -1) and \
                    (adj_hexes_lvl[i - 3] == -1):
-                    return [5, i]
-    return [0, 0]
+#                    if (adj_hexes_lvl[i - 4] > 1) and (adj_hexes_lvl[i - 6] > 1):
+#                        return ["down012", i]
+#                    elif (adj_hexes_lvl[i - 4] > 1):
+#                        return ["down0123", i]
+#                    elif (adj_hexes_lvl[i - 5] > 1):
+#                        return ["down0123", i - 1]
+#                    else:
+                    return ["down01234", i]
+            for i in range(6):
+                if (adj_hexes_lvl[i] != -1) and (adj_hexes_lvl[i - 3] != -1):
+                    if (adj_hexes_lvl[i] < -1):
+                        return ["down0123", i + 1]
+                    elif (adj_hexes_lvl[i - 3] < 1):
+                        return ["down0123", i + 4]
+                    elif (adj_hexes_lvl[i] < -1) and (adj_hexes_lvl[i - 3] < -1):
+                        return ["down012345", 0]
+                    else:
+                        return ["down03", i + 1]
+        5:
+            for i in range(6):
+                if adj_hexes_lvl[i] != -1:
+                    return ["down0123", i + 4]
+        6:
+            return ["down012345", 0]
+    return ["flat", 0]
     
 
 func gen_hex_height_level(hex: Hex) -> int:
