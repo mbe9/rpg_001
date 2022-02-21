@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Main.gd" type="Script" id=2]
 [ext_resource path="res://WorldLoader.tscn" type="PackedScene" id=3]
+[ext_resource path="res://HexMap.gd" type="Script" id=4]
 
 [sub_resource type="ProceduralSky" id=7]
 
@@ -16,6 +17,12 @@ fog_transmit_enabled = true
 ss_reflections_max_steps = 512
 ss_reflections_roughness = false
 dof_blur_far_distance = 40.0
+
+[sub_resource type="StyleBoxFlat" id=8]
+bg_color = Color( 0.6, 0.6, 0.6, 0 )
+
+[sub_resource type="Theme" id=9]
+TabContainer/styles/panel = SubResource( 8 )
 
 [node name="World" type="Spatial"]
 pause_mode = 2
@@ -36,9 +43,30 @@ pause_mode = 1
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 26.3783, 0 )
 collision_layer = 0
 
-[node name="DebugInfo" type="Label" parent="."]
-margin_right = 40.0
-margin_bottom = 14.0
+[node name="TabContainer" type="TabContainer" parent="."]
+pause_mode = 2
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = SubResource( 9 )
+tab_align = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="DebugInfo" type="Label" parent="TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 24.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HeightMap" type="Control" parent="TabContainer"]
+modulate = Color( 1, 1, 1, 0.596078 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 24.0
+rect_min_size = Vector2( 256, 256 )
+script = ExtResource( 4 )

@@ -3,6 +3,18 @@ class_name Util
 const SQRT_3: float = 1.732050807568877
 const ONE_THIRD: float = 0.333333333333
 
+static func world_to_2d_pos(vec: Vector3) -> Vector2:
+    return Vector2(vec.x, -vec.z)
+
+static func get_hexes_in_radius(radius: int) -> Array:
+    var hexes: Array = []
+    
+    for dq in range(-radius, radius + 1):
+        for dr in range(-radius, radius + 1):
+            if abs(dq + dr) <= radius:
+                hexes.append(Hex.new(dq, dr))
+    return hexes            
+
 static func get_adj_hexes(hex: Hex) -> Array:
     return [
         Hex.new(hex.q + 0, hex.r - 1),
