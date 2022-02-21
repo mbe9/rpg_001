@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/hex_flat_low.obj-4212c57c34620e9f9e7d40ed6c5fd967.mesh"
+
+[deps]
+
+files=[ "res://.import/hex_flat_low.obj-4212c57c34620e9f9e7d40ed6c5fd967.mesh" ]
+
+source_file="res://models/hex_flat_low.obj"
+dest_files=[ "res://.import/hex_flat_low.obj-4212c57c34620e9f9e7d40ed6c5fd967.mesh", "res://.import/hex_flat_low.obj-4212c57c34620e9f9e7d40ed6c5fd967.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286

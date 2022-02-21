@@ -13,6 +13,7 @@ func _process(delta):
         player.global_transform.origin.y,
         player.global_transform.origin.z
     ]
+    $DebugInfo.text += "\nhex count: %d" % ($WorldLoader.get_child_count() - 1)
     
 
 func _input(event):
